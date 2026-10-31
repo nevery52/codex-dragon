@@ -1,4 +1,4 @@
-param([string]$Source, [string]$DataDir, [string]$CodexCli, [switch]$CheckOnly, [switch]$Resume, [switch]$KeepExistingTask)
+﻿param([string]$Source, [string]$DataDir, [string]$CodexCli, [switch]$CheckOnly, [switch]$Resume, [switch]$KeepExistingTask)
 $ErrorActionPreference = 'Stop'
 if ($PSVersionTable.PSEdition -ne 'Desktop') { throw 'Run this installer with Windows PowerShell (powershell.exe), not pwsh.' }
 . (Join-Path $PSScriptRoot 'package-common.ps1')

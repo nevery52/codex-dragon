@@ -1,4 +1,4 @@
-param([string]$Receipt, [string]$DataDir, [switch]$CheckOnly)
+﻿param([string]$Receipt, [string]$DataDir, [switch]$CheckOnly)
 $ErrorActionPreference='Stop'
 if ($PSVersionTable.PSEdition -ne 'Desktop') { throw 'Use Windows PowerShell (powershell.exe).' }
 . (Join-Path $PSScriptRoot 'package-common.ps1')

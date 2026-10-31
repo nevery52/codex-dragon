@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)][string]$Backup,
     [switch]$CheckOnly,
     [switch]$Force

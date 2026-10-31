@@ -1,4 +1,4 @@
-param([string]$DataDir, [switch]$NoStart, [switch]$NoStartup)
+﻿param([string]$DataDir, [switch]$NoStart, [switch]$NoStartup)
 $ErrorActionPreference = 'Stop'
 # The Windows ScheduledTasks provider is native to Windows PowerShell. Running
 # registration through PowerShell 7's compatibility path can return E_FAIL for

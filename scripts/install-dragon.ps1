@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA 'CodexDragon'),
   [string]$DataDir = '', [string]$SourceRoot = (Split-Path $PSScriptRoot -Parent),
   [string]$Archive = '', [string]$Sha256 = '', [string]$ExpectedVersion = '',
