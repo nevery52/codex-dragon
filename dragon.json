@@ -1,0 +1,54 @@
+{
+  "id": "codex-dragon",
+  "name": "Codex 龙娘",
+  "version": "0.5.0",
+  "hostRules": [
+    {
+      "name": "codex-store",
+      "processNames": [
+        "ChatGPT.exe",
+        "Codex.exe"
+      ],
+      "imageContains": "\\WindowsApps\\OpenAI.Codex_",
+      "imageEndsWith": [
+        "\\app\\ChatGPT.exe",
+        "\\app\\Codex.exe"
+      ],
+      "sameSession": true,
+      "enabled": true
+    },
+    {
+      "name": "codex-standalone",
+      "processNames": [
+        "Codex.exe"
+      ],
+      "imageContains": "",
+      "imageEndsWith": [],
+      "sameSession": true,
+      "enabled": false
+    },
+    {
+      "name": "chatgpt-web",
+      "processNames": [
+        "chrome.exe",
+        "msedge.exe",
+        "brave.exe"
+      ],
+      "imageContains": "",
+      "imageEndsWith": [],
+      "sameSession": true,
+      "enabled": false,
+      "note": "仅整窗跟随，不能定位具体标签页内容区"
+    }
+  ],
+  "overlay": {
+    "anchor": {
+      "ax": 1,
+      "ay": 1
+    },
+    "snapDistance": 24,
+    "flipOnLeft": true,
+    "flipOnTop": false,
+    "bottomOnly": true
+  }
+}

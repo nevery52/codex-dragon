@@ -1,0 +1,5 @@
+基准：Karal23/codex-dragon，dragon 分支，提交 8e02754e71ea8fae79d4e7f40cea16d12b1dc5d9。
+保留原版龙娘形象、状态表情、订阅面板、Token 飘字、历史统计、设置和音效。
+仅追加 Windows 宿主跟随、当前用户登录自启、24 DIP 吸附和相对位置记忆。
+通过 --dragon-follow 将原版龙娘功能与原生跟随组合；原 --wsl 入口仍强制独立桌面。
+本机采集复用已有安装的 Windows 本地连接适配，不新增登录、不改 Codex 认证。

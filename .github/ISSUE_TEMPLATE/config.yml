@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Codex 龙娘安装与使用
+    url: https://github.com/Karal23/codex-dragon/blob/dragon/README.md
+    about: Windows 桌面 + WSL Codex 的构建、安装和使用说明。
+  - name: 详细连接、更新与数据说明
+    url: https://github.com/Karal23/codex-dragon/blob/dragon/README-WSL.md
+    about: 连接设置、本机更新、额度和 Token 统计边界。
+  - name: 安全漏洞（请勿公开提交）
+    url: https://github.com/Karal23/codex-dragon/blob/dragon/SECURITY.md
+    about: 请先阅读安全策略，不要在公开 issue 中附带认证信息或完整日志。
+  - name: 原项目 DeepSeek-Balance-Whale-Widget
+    url: https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget
+    about: 原作者 MeteorNOX 的仓库；本项目基于其 For-Codex 分支改造。
