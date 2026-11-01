@@ -196,7 +196,7 @@ export async function verifyDesktop({ app, window, screen, setHost, dispatcher, 
       results.explicitShow.push({cycle:n+1,...await pixels('explicit-show-'+(n+1))});
     }
     const initialEpoch = lastState.visibilityRevision;
-    for (let n = 0; n < 100; n++) {
+    for (let n = 0; n < (process.env.WHALE_DIALOG_ONLY === '1' ? 0 : 100); n++) {
       // Every fourth cycle is shorter than the poll interval and intentionally
       // withheld from IPC; only the real native lifecycle epoch can detect it.
       const missedByPolling = n % 4 === 0;
@@ -211,7 +211,7 @@ export async function verifyDesktop({ app, window, screen, setHost, dispatcher, 
       results.minimize.push({ cycle: n + 1, missedByPolling, recoveredMs: Date.now() - at, epoch: lastState.visibilityRevision, ...pixel });
       if ((n + 1) % 20 === 0) process.stdout.write(JSON.stringify({ stressProgress: 'minimize', completed: n + 1 }) + '\n');
     }
-    assert.ok(lastState.visibilityRevision > initialEpoch, 'native lifecycle hook observed real owned HWND transitions');
+    if(process.env.WHALE_DIALOG_ONLY !== '1') assert.ok(lastState.visibilityRevision > initialEpoch, 'native lifecycle hook observed real owned HWND transitions');
     for (let n = 0; n < 50; n++) {
       const save = host.request('save', 15000).catch(error => ({ error: error.message }));
       // Capture both Chromium and Windows views: owner disabled while the
@@ -235,7 +235,8 @@ export async function verifyDesktop({ app, window, screen, setHost, dispatcher, 
     assert.equal(after.presents, before.presents, 'idle heartbeats never repaint');
     assert.equal(fs.existsSync(path.join(dataDir, 'CANCEL-ONLY-no-file-created.txt')), false);
     assert.equal(errors.length, 0, JSON.stringify(errors));
-    results.checks.push('100 real owned-window minimize/restore cycles including 25 missed IPC samples', '50 native Save As dialogs cancelled without creating a file', 'Actual screen pixels matched the whale after all 150 cycles', 'No repeated remap or forced repaint during idle heartbeats');
+    if(process.env.WHALE_DIALOG_ONLY === '1') results.checks.push('Focused native dialog stress run');
+    results.checks.push('Minimize cycles completed: '+results.minimize.length, '50 native Save As dialogs cancelled without creating a file', 'Actual screen pixels matched after '+(results.minimize.length+results.saveCancel.length)+' lifecycle cycles', 'No repeated remap or forced repaint during idle heartbeats');
     results.checks.push('3 explicit show requests remap without a visibility transition','5 real foreground cycles preserve pixels without remapping','No topmost promotion or raising during passive screen sampling');
     results.rendering = renderInfo(); results.ok = true;
   } catch (error) {
@@ -251,3 +252,4 @@ export async function verifyDesktop({ app, window, screen, setHost, dispatcher, 
     await setHost({ hostAlive: false });
   }
 }
+
