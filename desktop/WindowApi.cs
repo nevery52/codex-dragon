@@ -142,6 +142,7 @@ public static class WhaleWindows {
         return new Dictionary<string, object> {
             { "hostAlive", roots.Length > 0 }, { "hostPid", ownerPid != 0 ? (int)ownerPid : roots.FirstOrDefault() },
             { "window", chosen.ToInt64().ToString() }, { "visible", visible }, { "dpi", chosen == IntPtr.Zero ? 96 : GetDpiForWindow(chosen) },
+            { "minimized", chosen != IntPtr.Zero && IsIconic(chosen) },
             { "modal", chosen != IntPtr.Zero && !IsWindowEnabled(chosen) },
             { "bounds", new { x = point.X, y = point.Y, width = Math.Max(1, rect.Right), height = Math.Max(1, rect.Bottom) } }
         };
@@ -183,6 +184,7 @@ public static class WhaleWindows {
     // A process-wide monotonic epoch survives reattachment. A short minimize /
     // restore, dialog cycle or return to Codex stays observable between polls.
     static long visibilityRevision;
+    public static readonly AutoResetEvent LifecycleChanged = new AutoResetEvent(false);
     public static long VisibilityRevision() { return Interlocked.Read(ref visibilityRevision); }
     public static bool IsFollowing() { var f = follower; return f != null && f.Running; }
     public static object FollowMetrics() {
@@ -219,7 +221,7 @@ public static class WhaleWindows {
         readonly uint hostPid;
         readonly ManualResetEvent initialized = new ManualResetEvent(false);
         readonly Thread thread;
-        uint threadId; int posted;
+        uint threadId; int posted; int restoreStack = 1;
         volatile bool stopping;
         public volatile bool Running;
         public string Error = "";
@@ -253,10 +255,13 @@ public static class WhaleWindows {
             // its owned overlay; child visibility is not evidence.
             if (hwnd != host && (GetAncestor(hwnd, 2) != hwnd || (ev != 0x0010 && ev != 0x0011))) return;
             Interlocked.Increment(ref visibilityRevision);
+            Interlocked.Exchange(ref restoreStack, 1);
+            LifecycleChanged.Set();
             Interlocked.Increment(ref Events); QueueSync();
         }
         void SyncBounds() {
             if (stopping || !IsWindow(host) || !IsWindow(overlay) || IsIconic(host)) return;
+            if (IsWindowVisible(host) && Interlocked.Exchange(ref restoreStack, 0) != 0) SetWindowPos(overlay, IntPtr.Zero, 0, 0, 0, 0, 0x0013);
             Rect client, current; var origin = new Point(0, 0);
             if (!GetClientRect(host, out client) || !ClientToScreen(host, ref origin) || !GetWindowRect(overlay, out current)) return;
             int width = client.Right - client.Left, height = client.Bottom - client.Top;

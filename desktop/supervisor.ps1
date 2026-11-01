@@ -48,7 +48,8 @@ function Send-WhaleHost($State) {
 $whaleFatal = $false
 $whaleStackAttempts = 0; $whaleStackRepairs = 0; $whaleLastStackAttempt = [DateTime]::MinValue
 try {
-    while (!$whaleStop.WaitOne(100)) {
+    $whaleWakeHandles = [Threading.WaitHandle[]]@($whaleStop, [WhaleWindows]::LifecycleChanged)
+    while ([Threading.WaitHandle]::WaitAny($whaleWakeHandles, 100) -ne 0) {
         $whaleNow = [DateTime]::UtcNow
         $whaleState = [WhaleWindows]::Probe()
         $whaleConfig = Read-WhaleJson (Join-Path $DataDir 'follow-config.json')

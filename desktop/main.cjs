@@ -364,9 +364,9 @@ else {
     const cursorPoll = setInterval(sendCursor, usesWindowShape ? 16 : 50);
     app.once('will-quit', () => clearInterval(cursorPoll));
     const icon = nativeImage.createFromPath(path.join(root, 'assets', 'codex-dragon.png')).resize({ width: 24, height: 24 });
-    tray = new Tray(icon); tray.setToolTip('Codex 龙娘 · 跟随 Codex');
+    if (!dragonFollow) { tray = new Tray(icon); tray.setToolTip('Codex 龙娘 · 跟随 Codex'); }
     updateTray();
-    tray.on('double-click', toggle); globalShortcut.register(isMac ? 'Command+Option+W' : 'Control+Alt+W', toggle);
+    tray?.on('double-click', toggle); globalShortcut.register(isMac ? 'Command+Option+W' : 'Control+Alt+W', toggle);
     if (usesWindowShape && !fixture) diagnosticShortcutRegistered = globalShortcut.register('Control+Alt+Shift+F10', reportVisibility);
     bridge = await startBridge(dispatcher, { dataDir, onHost: setHost, onMode: setMode, onResetPosition: resetPosition });
     markStartup('bridgeReady');

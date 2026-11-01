@@ -70,7 +70,7 @@ export async function verifyDesktop({ app, window, screen, setHost, dispatcher, 
   };
   try {
     const fixture = await host.ready;
-    native = childControl(process.env.WHALE_TEST_POWERSHELL || 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', ['-NoProfile', '-NonInteractive', '-File', path.join(ROOT, 'tests', 'visibility-stress-native.ps1'), '-Overlay', window.getNativeWindowHandle().readBigUInt64LE().toString(), '-OverlayPid', String(process.pid), '-FixtureHost', fixture.handle, '-FixturePid', String(fixture.pid)], env);
+    native = childControl(process.env.WHALE_TEST_POWERSHELL || 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(ROOT, 'tests', 'visibility-stress-native.ps1'), '-Overlay', window.getNativeWindowHandle().readBigUInt64LE().toString(), '-OverlayPid', String(process.pid), '-FixtureHost', fixture.handle, '-FixturePid', String(fixture.pid)], env);
     await native.ready;
     // Keep production's non-topmost owned window policy. Raising either HWND
     // before sampling can restore a lost surface and conceal the failure.

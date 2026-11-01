@@ -2,6 +2,7 @@
 // visibility. Recover only for explicit show requests or lifecycle boundaries,
 // never on a normal heartbeat or move. Injected timers make cancellation testable.
 function createVisibilityController({ getWindow, getState, onShown = () => {}, schedule = setTimeout, cancel = clearTimeout, delayMs = 40, now = Date.now }) {
+  let nativeMinimized = false;
   let pending = null, generation = 0, disposed = false, desired = null;
   let shown = false, recover = false, hostKey = null, revision = null, remaps = 0;
   let shownAt = -Infinity, hiddenSince = null, nativeAttempts = 0;
@@ -19,6 +20,18 @@ function createVisibilityController({ getWindow, getState, onShown = () => {}, s
       (revision !== null && nextRevision !== null && revision !== nextRevision);
     if (hostKey !== nextKey) { hiddenSince = null; nativeAttempts = 0; }
     hostKey = nextKey; revision = nextRevision;
+    // Owned HWND visibility follows the owner automatically. Never explicitly
+    // hide a ready overlay just because its owner is minimized: that removes
+    // Windows' automatic restore and forces a later IPC-driven remap.
+    const systemMinimize = !state.standalone && state.ready && shown && !state.quitting && !state.manuallyHidden && state.host?.hostAlive && state.host?.attached && state.host?.minimized;
+    if (systemMinimize) { clear(); nativeMinimized = nextKey; desired = false; return; }
+    if (nativeMinimized === nextKey && next) {
+      nativeMinimized = false; clear(); desired = true; recover = false;
+      shownAt = now(); hiddenSince = null;
+      if (!window.isVisible()) window.showInactive();
+      onShown(); return;
+    }
+    if (nativeMinimized && (!next || nativeMinimized !== nextKey)) nativeMinimized = false;
     if (changed && shown) { recover = true; clear(); }
     if (!next) {
       clear();

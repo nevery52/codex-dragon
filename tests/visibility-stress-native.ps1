@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 public static class WhaleVisibilityFixture {
     public sealed class Bounds { public int x,y,width,height; }
-    public sealed class State { public bool visible,modal,widgetVisible,hostTopmost,overlayTopmost,owned; public uint dpi; public string foreground; public Bounds bounds; }
+    public sealed class State { public bool minimized,visible,modal,widgetVisible,hostTopmost,overlayTopmost,owned; public uint dpi; public string foreground; public Bounds bounds; }
     [StructLayout(LayoutKind.Sequential)] struct Rect { public int Left,Top,Right,Bottom; }
     [StructLayout(LayoutKind.Sequential)] struct Point { public int X,Y; }
     delegate bool EnumProc(IntPtr h,IntPtr p);
@@ -42,7 +42,7 @@ public static class WhaleVisibilityFixture {
     public static object Probe(long id,long overlayId) {
         var previous=SetThreadDpiAwarenessContext(new IntPtr(-4));
         try { var h=new IntPtr(id);var overlay=new IntPtr(overlayId); Rect r; var p=new Point();GetClientRect(h,out r);ClientToScreen(h,ref p);
-            return new State { visible=IsWindowVisible(h)&&!IsIconic(h),modal=!IsWindowEnabled(h),widgetVisible=IsWindowVisible(overlay)&&!IsIconic(overlay),hostTopmost=(GetWindowLongPtr(h,-20).ToInt64()&8)!=0,overlayTopmost=(GetWindowLongPtr(overlay,-20).ToInt64()&8)!=0,owned=GetWindow(overlay,4)==h,foreground=GetForegroundWindow().ToInt64().ToString(),dpi=GetDpiForWindow(h),bounds=new Bounds {x=p.X,y=p.Y,width=r.Right,height=r.Bottom} };
+            return new State { minimized=IsIconic(h),visible=IsWindowVisible(h)&&!IsIconic(h),modal=!IsWindowEnabled(h),widgetVisible=IsWindowVisible(overlay)&&!IsIconic(overlay),hostTopmost=(GetWindowLongPtr(h,-20).ToInt64()&8)!=0,overlayTopmost=(GetWindowLongPtr(overlay,-20).ToInt64()&8)!=0,owned=GetWindow(overlay,4)==h,foreground=GetForegroundWindow().ToInt64().ToString(),dpi=GetDpiForWindow(h),bounds=new Bounds {x=p.X,y=p.Y,width=r.Right,height=r.Bottom} };
         } finally {SetThreadDpiAwarenessContext(previous);}
     }
     public static int Cancel(long hostId,int hostPid) {
